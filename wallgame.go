@@ -31,7 +31,7 @@ var (
 
 func init() {
 	var err error
-	charImg, _, err = ebitenutil.NewImageFromFile("./Images/character_ball.png")
+	charImg, _, err = ebitenutil.NewImageFromFile("./images/character_ball.png")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -44,6 +44,7 @@ type char struct {
 	newY int
 }
 
+//updates the Horizontal movement of the character
 func (c *char) updateMovement() {
 	c.x += c.newX
 	c.y += c.newY
@@ -60,6 +61,8 @@ func (c *char) updateMovement() {
 	}
 }
 
+//Makes character jump
+//To Add: Kolla så man inte kan hoppa i all evighetet
 func (c *char) tryJump() {
 	c.newY = -10 * unit
 }
@@ -74,15 +77,16 @@ func (g *Game) Update() error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.newX = -4 * unit
-	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
+		g.player.updateMovement()
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		g.player.newX = 4 * unit
+		g.player.updateMovement()
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
 		g.player.tryJump()
 	}
-
-	g.player.updateMovement()
 	return nil
 }
 
