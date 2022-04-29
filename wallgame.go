@@ -8,6 +8,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 const (
@@ -59,6 +60,10 @@ func (c *char) updateMovement() {
 	}
 }
 
+func (c *char) tryJump() {
+	c.newY = -10 * unit
+}
+
 type Game struct {
 	player *char
 }
@@ -66,10 +71,15 @@ type Game struct {
 func (g *Game) Update() error {
 	if g.player == nil {
 		g.player = &char{x: 50 * unit, y: groundY * unit}
-	} else if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+	}
+	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.newX = -4 * unit
 	} else if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		g.player.newX = 4 * unit
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
+		g.player.tryJump()
 	}
 
 	g.player.updateMovement()
