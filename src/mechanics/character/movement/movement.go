@@ -1,9 +1,10 @@
-package mechanics
+package movement
 
 import (
 	_ "image/png"
 
-	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/FelixSjogren/Projinda/src"
+	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -42,7 +43,7 @@ func (c *player) updateMovement() {
 	}
 }
 
-func (g *Game) Update() error {
+func (g *src.Game) Update() error {
 	if g.player == nil {
 		g.player = &player{x: 50 * unit, y: groundY * unit}
 	}
