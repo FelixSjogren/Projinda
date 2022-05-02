@@ -26,7 +26,11 @@ const (
 //Makes character jump
 //To Add: Kolla så man inte kan hoppa i all evighetet
 func (c *player) tryJump() {
-	c.newY = -10 * unit
+	c.newY = -14 * unit
+}
+
+func (c *player) tryDive() {
+	c.newY = 10 * unit
 }
 
 //updates the Horizontal movement of the character
@@ -52,15 +56,19 @@ func (g *Game) Update() error {
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.newX = -4 * unit
-		g.player.updateMovement()
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
 		g.player.newX = 4 * unit
-		g.player.updateMovement()
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
 		g.player.tryJump()
 	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) || inpututil.IsKeyJustPressed(ebiten.KeyS) {
+		g.player.tryDive()
+	}
+
+	g.player.updateMovement()
 	return nil
 }
