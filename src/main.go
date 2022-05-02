@@ -30,5 +30,4 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(background)
 	g.player.drawPL(screen)
-	g.drawBG(bgImage)
 }
