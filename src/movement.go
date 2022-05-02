@@ -1,10 +1,9 @@
-package movement
+package main
 
 import (
 	_ "image/png"
 
-	"github.com/FelixSjogren/Projinda/src"
-	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
@@ -13,6 +12,10 @@ type player struct {
 	y    int
 	newX int
 	newY int
+}
+
+type Game struct {
+	player *player
 }
 
 const (
@@ -43,7 +46,7 @@ func (c *player) updateMovement() {
 	}
 }
 
-func (g *src.Game) Update() error {
+func (g *Game) Update() error {
 	if g.player == nil {
 		g.player = &player{x: 50 * unit, y: groundY * unit}
 	}
