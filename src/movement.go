@@ -14,10 +14,6 @@ type player struct {
 	newY int
 }
 
-type Game struct {
-	player *player
-}
-
 const (
 	unit    = 16
 	groundY = 420
@@ -41,7 +37,7 @@ func (c *player) updateMovement() {
 		c.y = groundY * unit
 	}
 	if c.newX > 0 {
-		c.newX -= 4
+		c.newX -= 6
 	} else if c.newX < 0 {
 		c.newX += 4
 	}
@@ -50,9 +46,10 @@ func (c *player) updateMovement() {
 	}
 }
 
-func (g *Game) Update() error {
+//checks input for player movement
+func (g *Game) updatePlayer() error {
 	if g.player == nil {
-		g.player = &player{x: 50 * unit, y: groundY * unit}
+		g.player = &player{x: 100 * unit, y: (groundY + 4) * unit}
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.newX = -4 * unit
@@ -70,5 +67,17 @@ func (g *Game) Update() error {
 	}
 
 	g.player.updateMovement()
+	if g.hit() {
+		g.gameoverCount = 30
+		g.mode = ModeGameOver
+	}
 	return nil
+}
+
+//checks if Player has hit tha back wall
+func (g *Game) hit() bool {
+	if g.player.x <= 0 {
+		return true
+	}
+	return false
 }
