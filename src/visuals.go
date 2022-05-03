@@ -44,6 +44,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 	}
 }
 
+//Helper function for ground placement
 func floorDiv(x, y int) int {
 	d := x / y
 	if d*y == x || x >= 0 {
@@ -52,15 +53,18 @@ func floorDiv(x, y int) int {
 	return d - 1
 }
 
+//Also helper for ground placement
 func floorMod(x, y int) int {
 	return x - floorDiv(x, y)*y
 }
 
+//sets camera position
 func (g *Game) init() {
 	g.cameraX = -240
 	g.cameraY = 0
 }
 
+//gets needed images
 func init() {
 	var err error
 	playerImg, _, err = ebitenutil.NewImageFromFile("./images/character_ball.png")

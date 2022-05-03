@@ -32,6 +32,7 @@ var (
 	smallArcadeFont font.Face
 )
 
+//a game type, wich is needed to run the game
 type Game struct {
 	mode Mode
 
@@ -59,14 +60,17 @@ func main() {
 	}
 }
 
+//needed for ebiten.RunGame
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return windowWidth, windowHeight
 }
 
+//This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
+// which in this case is to crash if not in ModeGame heheh
 func (g *Game) Update() error {
 	switch g.mode {
 	case ModeTitle:
-		if g.isKeyPressed() {
+		if g.isSpacePressed() {
 			g.mode = ModeGame
 		}
 	case ModeGame:
@@ -74,7 +78,7 @@ func (g *Game) Update() error {
 	case ModeGameOver:
 		if g.gameoverCount > 0 {
 			g.gameoverCount--
-		} else if g.gameoverCount == 0 && g.isKeyPressed() {
+		} else if g.gameoverCount == 0 && g.isSpacePressed() {
 			g.init()
 			g.mode = ModeGame
 			g.player.x = 100 * unit
@@ -84,6 +88,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
+//Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(background)
 	var titleTexts []string
@@ -109,7 +114,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawGround(screen)
 }
 
-func (g *Game) isKeyPressed() bool {
+//Checks if spacebar is pressed
+func (g *Game) isSpacePressed() bool {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		return true
 	}

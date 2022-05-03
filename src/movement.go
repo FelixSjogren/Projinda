@@ -37,7 +37,7 @@ func (c *player) updateMovement() {
 		c.y = groundY * unit
 	}
 	if c.newX > 0 {
-		c.newX -= 4
+		c.newX -= 6
 	} else if c.newX < 0 {
 		c.newX += 4
 	}
@@ -46,6 +46,7 @@ func (c *player) updateMovement() {
 	}
 }
 
+//checks input for player movement
 func (g *Game) updatePlayer() error {
 	if g.player == nil {
 		g.player = &player{x: 100 * unit, y: (groundY + 4) * unit}
@@ -73,6 +74,7 @@ func (g *Game) updatePlayer() error {
 	return nil
 }
 
+//checks if Player has hit tha back wall
 func (g *Game) hit() bool {
 	if g.player.x <= 0 {
 		return true
