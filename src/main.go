@@ -2,11 +2,15 @@ package main
 
 import (
 	"image/color"
+	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
 	"github.com/hajimehoshi/ebiten/v2/text"
+
 	"golang.org/x/image/font"
+	"golang.org/x/image/font/opentype"
 )
 
 type Mode int
@@ -78,9 +82,10 @@ func (g *Game) Update() error {
 	case ModeGameOver:
 		if g.gameoverCount > 0 {
 			g.gameoverCount--
-		} else if g.gameoverCount == 0 && g.isSpacePressed() {
+		}
+		if g.gameoverCount == 0 && g.isSpacePressed() {
 			g.init()
-			g.mode = ModeGame
+			g.mode = ModeTitle
 			g.player.x = 100 * unit
 			g.player.y = (groundY + 4) * unit
 		}
@@ -110,6 +115,17 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		text.Draw(screen, l, arcadeFont, x, (i+4)*fontSize, color.Black)
 	}
 
+	if g.mode == ModeTitle {
+		msg := []string{
+			"Go Gopher by Renee French is",
+			"licenced under CC BY 3.0.",
+		}
+		for i, l := range msg {
+			x := (windowWidth - len(l)*smallFontSize) / 2
+			text.Draw(screen, l, smallArcadeFont, x, windowHeight-4+(i-1)*smallFontSize, color.White)
+		}
+	}
+
 	g.player.drawPL(screen)
 	g.drawGround(screen)
 }
@@ -120,4 +136,36 @@ func (g *Game) isSpacePressed() bool {
 		return true
 	}
 	return false
+}
+
+func init() {
+	tt, err := opentype.Parse(fonts.PressStart2P_ttf)
+	if err != nil {
+		log.Fatal(err)
+	}
+	const dpi = 72
+	titleArcadeFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    titleFontSize,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	arcadeFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    fontSize,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
+	smallArcadeFont, err = opentype.NewFace(tt, &opentype.FaceOptions{
+		Size:    smallFontSize,
+		DPI:     dpi,
+		Hinting: font.HintingFull,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
