@@ -62,8 +62,6 @@ func NewGame() *Game {
 	return g
 }
 func main() {
-	//newGame := &Game{}
-	//newGame.mode = ModeTitle // varför crash när ändra till ModeTitle?
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Wall Game")
 	if err := ebiten.RunGame(NewGame()); err != nil {
@@ -82,7 +80,11 @@ func (g *Game) Update() error {
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
+			if g.player == nil {
+				g.player = &player{x: 200 * unit, y: (groundY + 4) * unit}
+			}
 			g.mode = ModeGame
+			//time.Sleep(time.Millisecond * 100)
 		}
 	case ModeGame:
 		g.updatePlayer()
@@ -93,7 +95,7 @@ func (g *Game) Update() error {
 		if g.gameoverCount == 0 && g.isSpacePressed() {
 			g.init()
 			g.mode = ModeTitle
-			g.player.x = 100 * unit
+			g.player.x = 200 * unit
 			g.player.y = (groundY + 4) * unit
 		}
 	}
@@ -130,8 +132,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	if g.mode == ModeTitle {
 		msg := []string{
-			"Go Gopher by Renee French is",
-			"licenced under CC BY 3.0.",
+			"Incredible game by",
+			"Felix & John",
 		}
 		for i, l := range msg {
 			x := (windowWidth - len(l)*smallFontSize) / 2
