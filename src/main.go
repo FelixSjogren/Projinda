@@ -48,6 +48,9 @@ type Game struct {
 	cameraX int
 	cameraY int
 
+	// Boxes
+	boxTileYs []int
+
 	gameoverCount int
 }
 
