@@ -48,9 +48,7 @@ func (c *player) updateMovement() {
 
 //checks input for player movement
 func (g *Game) updatePlayer() error {
-	if g.player == nil {
-		g.player = &player{x: 100 * unit, y: (groundY + 4) * unit}
-	}
+
 	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
 		g.player.newX = -4 * unit
 	}
