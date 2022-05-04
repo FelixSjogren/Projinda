@@ -26,7 +26,6 @@ const (
 const (
 	windowHeight  = 720
 	windowWidth   = 1280
-	tileSize      = 212
 	titleFontSize = fontSize * 1.5
 	fontSize      = 24
 	smallFontSize = fontSize / 2
