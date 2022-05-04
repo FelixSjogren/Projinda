@@ -14,6 +14,10 @@ var (
 	groundImg *ebiten.Image
 )
 
+const (
+	tileSize = 212
+)
+
 //draws player
 func (p *player) drawPL(screen *ebiten.Image) {
 	s := playerImg
@@ -21,7 +25,6 @@ func (p *player) drawPL(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
 	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit)
-	// Når ej hit (alltså gör ej translate oftast) - den når till alla "translate på flappy. Borde vara pga denna som det kraschar"
 	screen.DrawImage(s, op)
 
 }
@@ -39,7 +42,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 	for i := -2; i < newX+1; i++ {
 		// ground
 		op.GeoM.Reset()
-		op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX, tileSize)),
+		op.GeoM.Translate(float64(i*(tileSize-1)-floorMod(g.cameraX, tileSize)),
 			float64((newY-1)*tileSize-floorMod(g.cameraY, tileSize)))
 		screen.DrawImage(groundImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
 	}
