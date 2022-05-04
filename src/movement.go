@@ -53,7 +53,7 @@ func (g *Game) updatePlayer() error {
 		g.player.newX = -4 * unit
 	}
 	if ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight) {
-		g.player.newX = 4 * unit
+		g.player.newX = 6 * unit
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
@@ -63,6 +63,9 @@ func (g *Game) updatePlayer() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) || inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		g.player.tryDive()
 	}
+
+	//Makes the player follow the ground if no input
+	g.player.x -= 2 * unit
 
 	g.player.updateMovement()
 	if g.hit() {

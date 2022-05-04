@@ -118,7 +118,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		texts = []string{"", "", "", "", "", "", "", "Press space to play", ""}
 	case ModeGameOver:
 		titleTexts = []string{"", "GAME OVER!"}
-		texts = []string{"", "", "", "", "", "", "", "Press space to play again", ""}
+		texts = []string{"", "", "", "", "", "", "", "Press space to return to title-screen", ""}
 	}
 	for i, l := range titleTexts {
 		x := (windowWidth - len(l)*titleFontSize) / 2

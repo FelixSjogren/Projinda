@@ -42,7 +42,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 	for i := -2; i < newX+1; i++ {
 		// ground
 		op.GeoM.Reset()
-		op.GeoM.Translate(float64(i*(tileSize-1)-floorMod(g.cameraX, tileSize)),
+		op.GeoM.Translate(float64(i*(tileSize-1)-floorMod(g.cameraX, tileSize/2)),
 			float64((newY-1)*tileSize-floorMod(g.cameraY, tileSize)))
 		screen.DrawImage(groundImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
 	}
