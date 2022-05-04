@@ -21,6 +21,7 @@ func (p *player) drawPL(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
 	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit)
+	// Når ej hit (alltså gör ej translate oftast) - den når till alla "translate på flappy. Borde vara pga denna som det kraschar"
 	screen.DrawImage(s, op)
 
 }
