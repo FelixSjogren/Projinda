@@ -3,6 +3,8 @@ package main
 import (
 	"image/color"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
@@ -54,12 +56,17 @@ var (
 	background = color.White
 )
 
+func NewGame() *Game {
+	g := &Game{}
+	g.init()
+	return g
+}
 func main() {
-	newGame := &Game{}
-	newGame.mode = ModeGame
+	//newGame := &Game{}
+	//newGame.mode = ModeTitle // varför crash när ändra till ModeTitle?
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Wall Game")
-	if err := ebiten.RunGame(newGame); err != nil {
+	if err := ebiten.RunGame(NewGame()); err != nil {
 		panic(err)
 	}
 }
@@ -96,6 +103,12 @@ func (g *Game) Update() error {
 //Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(background)
+	g.drawGround(screen)
+
+	if g.mode != ModeTitle {
+		g.player.drawPL(screen)
+	}
+
 	var titleTexts []string
 	var texts []string
 	switch g.mode {
@@ -103,7 +116,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		titleTexts = []string{"WALL GAME"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to play", ""}
 	case ModeGameOver:
-		texts = []string{"", "GAME OVER!"}
+		titleTexts = []string{"", "GAME OVER!"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to play again", ""}
 	}
 	for i, l := range titleTexts {
@@ -125,9 +138,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 			text.Draw(screen, l, smallArcadeFont, x, windowHeight-4+(i-1)*smallFontSize, color.White)
 		}
 	}
-
-	g.player.drawPL(screen)
-	g.drawGround(screen)
 }
 
 //Checks if spacebar is pressed
@@ -168,4 +178,8 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func init() {
+	rand.Seed(time.Now().UnixNano())
 }

@@ -68,8 +68,8 @@ func (g *Game) updatePlayer() error {
 
 	g.player.updateMovement()
 	if g.hit() {
-		g.gameoverCount = 30
 		g.mode = ModeGameOver
+		g.gameoverCount = 30
 	}
 	return nil
 }
