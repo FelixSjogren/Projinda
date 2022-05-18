@@ -23,6 +23,7 @@ const (
 //To Add: Kolla så man inte kan hoppa i all evighetet
 func (g *Game) tryJump() {
 	if playerY == groundY+(playerHeight-20) || g.onBox() {
+
 		g.player.newY = -14 * unit
 	}
 }
@@ -119,6 +120,7 @@ var (
 const (
 	playerWidth  = 60
 	playerHeight = 68
+
 )
 
 //Checks if player hits astroids
@@ -129,6 +131,7 @@ func (g *Game) hitAstroid() bool {
 			for j := 0; j <= unit; j++ {
 				if playerY-playerHeight == astroidY+j-20 || playerY == astroidY+j-20 ||
 					playerY-playerHeight == astroidY+(boxWidth/2)+(j/2)-20 || playerY == astroidY+(boxWidth/2)+(j/2)-20 {
+
 					return true
 					break
 				}

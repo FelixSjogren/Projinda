@@ -35,11 +35,13 @@ const (
 	frameWidth  = 45
 	frameHeight = 720
 
+
 	playerFrameNum    = 6
 	playerFrameOX     = 0
 	playerFrameOY     = 0
 	playerFrameWidth  = 60
 	playerFrameHeight = 68
+
 )
 
 func (g *Game) drawDeadPL(screen *ebiten.Image) {
@@ -101,6 +103,7 @@ func (g *Game) drawSky(screen *ebiten.Image) {
 	op.GeoM.Reset()
 	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, windowWidth, windowHeight)).(*ebiten.Image), op)
 }
+
 
 //draws the fire
 func (g *Game) drawFire(screen *ebiten.Image) {
