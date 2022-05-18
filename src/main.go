@@ -53,6 +53,10 @@ type Game struct {
 	boxTileYs []int
 	boxTileXs []int
 
+	//astroids
+	astroidYpos int
+	astroidXpos int
+
 	gameoverCount int
 
 	count int
@@ -86,7 +90,7 @@ func (g *Game) Update() error {
 			if g.player == nil {
 				g.player = &player{x: 200 * unit, y: (groundY - 40) * unit}
 			}
-			g.cameraMovement = 4
+			g.cameraMovement = 6
 			g.mode = ModeGame
 			//time.Sleep(time.Millisecond * 100)
 		}
@@ -101,6 +105,12 @@ func (g *Game) Update() error {
 			g.mode = ModeTitle
 			g.player.x = 200 * unit
 			g.player.y = (groundY - 40) * unit
+			boxX = 0
+			boxY = 0
+			playerX = 0
+			playerY = 0
+			astroidX = -200
+			astroidY = -200
 		}
 	}
 	return nil

@@ -38,21 +38,30 @@ func (g *Game) updateMovement() {
 	if g.player.y > groundY*unit {
 		g.player.y = groundY * unit
 	}
-	if g.player.newX > 0 && !g.onBox() {
+	if g.player.newX > 0 {
 		g.player.newX -= 6
 	} else if g.player.newX < 0 {
 		g.player.newX += 4
 	}
-	if g.player.newY < 20*unit {
+	if g.player.newY < 20*unit && !g.onBox() {
 		g.player.newY += 8
+	}
+
+	if g.insideBox() {
+		g.player.y = (boxY - (2 * boxWidth)) * unit
+		g.player.newY = 0
 	}
 }
 
 //checks input for player movement
 func (g *Game) updatePlayer() error {
 
+	if g.hitAstroid() {
+		g.mode = ModeGameOver
+	}
+
 	//Makes the player follow the ground if no input
-	g.player.x -= g.cameraMovement * unit * 2
+	g.player.x -= g.cameraMovement * unit
 
 	if (ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft)) && !g.hitBoxBack() {
 		g.player.newX = -6 * unit
@@ -99,16 +108,35 @@ func (g *Game) boxAt(tileX int) (tileY int, ok bool) {
 
 //positions of player and boxes
 var (
-	boxX    = 0
-	boxY    = 0
-	playerX = 0
-	playerY = 0
+	boxX     = 0
+	boxY     = 0
+	playerX  = 0
+	playerY  = 0
+	astroidX = -200
+	astroidY = -200
 )
 
 const (
 	playerWidth  = 60
 	playerHeight = 64
 )
+
+//Checks if player hits astroids
+func (g *Game) hitAstroid() bool {
+	for i := 0; i <= boxWidth; i++ {
+		if playerX+playerWidth == astroidX+i || playerX == astroidX+i ||
+			playerX+playerWidth == astroidX+(boxWidth/2)+(i/2) || playerX == astroidX+(boxWidth/2)+(i/2) {
+			for j := 0; j <= unit; j++ {
+				if playerY+playerHeight == astroidY+j || playerY == astroidY+j ||
+					playerY+playerHeight == astroidY+(boxWidth/2)+(j/2) || playerX == astroidX+(boxWidth/2)+(j/2) {
+					return true
+					break
+				}
+			}
+		}
+	}
+	return false
+}
 
 //checks if player hits box
 func (g *Game) hitBox() bool {
@@ -146,14 +174,12 @@ func (g *Game) onBox() bool {
 	for i := 0; i <= boxWidth; i++ {
 		if playerX+playerWidth == boxX+i || playerX == boxX+i ||
 			playerX+playerWidth == boxX+(boxWidth/2)+(i/2) || playerX == boxX+(boxWidth/2)+(i/2) {
-			println("X corr")
-			println("player Y", playerY)
-			println("boxy : ", boxY)
-
 			for j := 0; j <= unit; j++ {
 				if playerY+j+playerHeight == boxY-boxWidth {
 					println("on box")
-					if !inpututil.IsKeyJustPressed(ebiten.KeySpace) || !inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || !inpututil.IsKeyJustPressed(ebiten.KeyW) {
+					if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
+						g.player.newY = -14 * unit
+					} else {
 						g.player.newY = 0
 					}
 					//g.player.y = boxY - boxWidth
@@ -164,5 +190,18 @@ func (g *Game) onBox() bool {
 		}
 	}
 
+	return false
+}
+
+func (g *Game) insideBox() bool {
+	for i := boxX; i < (boxX + boxWidth); i++ {
+		if playerX == i {
+			for j := boxY; j > (boxY - boxWidth); j-- {
+				if playerY == j {
+					return true
+				}
+			}
+		}
+	}
 	return false
 }

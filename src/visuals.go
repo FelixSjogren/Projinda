@@ -11,9 +11,11 @@ import (
 )
 
 var (
+	
 	playerImg *ebiten.Image
 	groundImg *ebiten.Image
 	boxImg    *ebiten.Image
+  astroidImg *ebiten.Image
 	skyImg    *ebiten.Image
 	fireImg   *ebiten.Image
 )
@@ -98,21 +100,22 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 			screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
 			boxX = int(op.GeoM.Element(0, 2))
 			boxY = int(op.GeoM.Element(1, 2))
+		}
 
-			/* for j := 0; j < tileX; j++ {
-				fmt.Printf("op: %v\n", op.GeoM)
-				op.GeoM.Reset()
-				op.GeoM.Scale(1, -1)
-				op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX, tileSize)),
-					//om man sätter tilesize i början till boxWidth blir det en rad
-					float64((j+1)*tileSize-floorMod(g.cameraY, boxWidth)))
-				//xy-pos typ men lite oklart om man sätter första argumentet i translate till o får man ett torn
-				op.GeoM.Translate(float64(-(j)*boxWidth), float64(groundY-(boxWidth*(j+1))))
-				var r image.Rectangle
-				r = image.Rect(0, 0, boxWidth, boxWidth)
-				screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
-				boxGeoMX = int(op.GeoM.Element(0, 2))
-			} */
+		//astroid
+		if _, ok := g.boxPossibleAt(floorDiv(g.cameraX-500, tileSize) + i); ok {
+			op.GeoM.Reset()
+			op.GeoM.Scale(1, 1)
+			op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX-500, tileSize)),
+				//om man sätter tilesize i början till boxWidth blir det en rad
+				float64(tileSize-floorMod(g.cameraY, boxWidth)))
+			//xy-pos typ men lite oklart om man sätter första argumentet i translate till o får man ett torn
+			op.GeoM.Translate(float64(boxWidth), float64(groundY-(3*boxWidth)))
+			var r image.Rectangle
+			r = image.Rect(0, 0, boxWidth, boxWidth)
+			screen.DrawImage(astroidImg.SubImage(r).(*ebiten.Image), op)
+			astroidX = int(op.GeoM.Element(0, 2))
+			astroidY = int(op.GeoM.Element(1, 2))
 		}
 	}
 }
@@ -172,6 +175,10 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	astroidImg, _, err = ebitenutil.NewImageFromFile("./images/astroid.png")
+	if err != nil {
+		log.Fatal(err)
+	}
 	skyImg, _, err = ebitenutil.NewImageFromFile("./images/sky.png")
 	if err != nil {
 		log.Fatal(err)
@@ -180,5 +187,4 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
