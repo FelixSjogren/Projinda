@@ -58,17 +58,16 @@ type Game struct {
 	astroidXpos int
 
 	gameoverCount int
-}
 
-var (
-	background = color.White
-)
+	count int
+}
 
 func NewGame() *Game {
 	g := &Game{}
 	g.init()
 	return g
 }
+
 func main() {
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Wall Game")
@@ -84,6 +83,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 //This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
 func (g *Game) Update() error {
+	g.count++
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
@@ -118,7 +118,8 @@ func (g *Game) Update() error {
 
 //Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(background)
+	g.drawSky(screen)
+	g.drawFire(screen)
 	g.drawGround(screen)
 
 	if g.mode != ModeTitle {
