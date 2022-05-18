@@ -14,6 +14,7 @@ var (
 	playerImg *ebiten.Image
 	groundImg *ebiten.Image
 	boxImg    *ebiten.Image
+	skyImg    *ebiten.Image
 )
 
 const (
@@ -34,6 +35,14 @@ func (p *player) drawPL(screen *ebiten.Image) {
 	screen.DrawImage(s, op)
 	playerX = int(op.GeoM.Element(0, 2))
 	playerY = int(op.GeoM.Element(1, 2))
+
+}
+
+func g *Game drawSky(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+	
+	op.GeoM.Reset()
+	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
 
 }
 
@@ -139,6 +148,10 @@ func init() {
 		log.Fatal(err)
 	}
 	boxImg, _, err = ebitenutil.NewImageFromFile("./images/box.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	skyImg, _, err = ebitenutil.NewImageFromFile("./images/sky.png")
 	if err != nil {
 		log.Fatal(err)
 	}

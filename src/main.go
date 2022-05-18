@@ -110,6 +110,7 @@ func (g *Game) Update() error {
 func (g *Game) Draw(screen *ebiten.Image) {
 	screen.Fill(background)
 	g.drawGround(screen)
+	g.drawSky(screen)
 
 	if g.mode != ModeTitle {
 		g.player.drawPL(screen)
