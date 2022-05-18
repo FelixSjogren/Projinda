@@ -38,11 +38,12 @@ func (p *player) drawPL(screen *ebiten.Image) {
 
 }
 
+// draws the sky
 func (g *Game) drawSky(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 
 	op.GeoM.Reset()
-	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
+	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, windowWidth, windowHeight)).(*ebiten.Image), op)
 
 }
 

@@ -56,15 +56,12 @@ type Game struct {
 	gameoverCount int
 }
 
-var (
-	background = color.White
-)
-
 func NewGame() *Game {
 	g := &Game{}
 	g.init()
 	return g
 }
+
 func main() {
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Wall Game")
@@ -108,9 +105,8 @@ func (g *Game) Update() error {
 
 //Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(background)
-	g.drawGround(screen)
 	g.drawSky(screen)
+	g.drawGround(screen)
 
 	if g.mode != ModeTitle {
 		g.player.drawPL(screen)
