@@ -54,6 +54,8 @@ type Game struct {
 	boxTileXs []int
 
 	gameoverCount int
+
+	count int
 }
 
 func NewGame() *Game {
@@ -77,6 +79,7 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 
 //This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
 func (g *Game) Update() error {
+	g.count++
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
@@ -106,6 +109,7 @@ func (g *Game) Update() error {
 //Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawSky(screen)
+	g.drawFire(screen)
 	g.drawGround(screen)
 
 	if g.mode != ModeTitle {

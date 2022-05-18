@@ -15,6 +15,7 @@ var (
 	groundImg *ebiten.Image
 	boxImg    *ebiten.Image
 	skyImg    *ebiten.Image
+	fireImg   *ebiten.Image
 )
 
 const (
@@ -23,6 +24,12 @@ const (
 	boxStartOffsetX = 8
 	boxIntervalX    = 8
 	boxGapY         = 0
+
+	frameNum    = 4
+	frameOX     = 0
+	frameOY     = 0
+	frameWidth  = 45
+	frameHeight = 720
 )
 
 //draws player
@@ -44,6 +51,17 @@ func (g *Game) drawSky(screen *ebiten.Image) {
 
 	op.GeoM.Reset()
 	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, windowWidth, windowHeight)).(*ebiten.Image), op)
+}
+
+func (g *Game) drawFire(screen *ebiten.Image) {
+	op := &ebiten.DrawImageOptions{}
+
+	op.GeoM.Reset()
+	op.GeoM.Translate(-float64(frameWidth), -float64(frameHeight))
+	op.GeoM.Translate(frameWidth, frameHeight)
+	i := (g.count / 5) % frameNum
+	sx, sy := frameOX+i*frameWidth, frameOY
+	screen.DrawImage(fireImg.SubImage(image.Rect(sx, sy, sx+frameWidth, sy+frameHeight)).(*ebiten.Image), op)
 
 }
 
@@ -158,4 +176,9 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	fireImg, _, err = ebitenutil.NewImageFromFile("./images/fire_anim.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
