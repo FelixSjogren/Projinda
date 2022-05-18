@@ -45,11 +45,13 @@ type Game struct {
 	player *player
 
 	// Camera
-	cameraX int
-	cameraY int
+	cameraX        int
+	cameraY        int
+	cameraMovement int
 
 	// Boxes
 	boxTileYs []int
+	boxTileXs []int
 
 	gameoverCount int
 }
@@ -77,14 +79,14 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 //This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
-// which in this case is to crash if not in ModeGame heheh
 func (g *Game) Update() error {
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
 			if g.player == nil {
-				g.player = &player{x: 200 * unit, y: (groundY + 4) * unit}
+				g.player = &player{x: 200 * unit, y: (groundY - 40) * unit}
 			}
+			g.cameraMovement = 4
 			g.mode = ModeGame
 			//time.Sleep(time.Millisecond * 100)
 		}
@@ -98,7 +100,7 @@ func (g *Game) Update() error {
 			g.init()
 			g.mode = ModeTitle
 			g.player.x = 200 * unit
-			g.player.y = (groundY + 4) * unit
+			g.player.y = (groundY - 40) * unit
 		}
 	}
 	return nil

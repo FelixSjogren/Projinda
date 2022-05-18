@@ -21,7 +21,7 @@ const (
 	boxWidth        = 100
 	boxStartOffsetX = 8
 	boxIntervalX    = 8
-	boxGapY         = 5
+	boxGapY         = 0
 )
 
 //draws player
@@ -30,14 +30,16 @@ func (p *player) drawPL(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
-	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit)
+	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit+54)
 	screen.DrawImage(s, op)
+	playerX = int(op.GeoM.Element(0, 2))
+	playerY = int(op.GeoM.Element(1, 2))
 
 }
 
 //draws the ground and box and moves camera
 func (g *Game) drawGround(screen *ebiten.Image) {
-	g.cameraX += 2
+	g.cameraX += g.cameraMovement
 	const (
 		newX        = windowWidth / tileSize
 		newY        = windowHeight/tileSize + 0.5
@@ -55,9 +57,20 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 		screen.DrawImage(groundImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
 
 		// box
-		if tileY, ok := g.boxAt(floorDiv(g.cameraX, tileSize) + i); ok {
-
-			for j := 0; j < tileY; j++ {
+		if _, ok := g.boxPossibleAt(floorDiv(g.cameraX, tileSize) + i); ok {
+			op.GeoM.Reset()
+			op.GeoM.Scale(1, -1)
+			op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX, tileSize)),
+				//om man sätter tilesize i början till boxWidth blir det en rad
+				float64(tileSize-floorMod(g.cameraY, boxWidth)))
+			//xy-pos typ men lite oklart om man sätter första argumentet i translate till o får man ett torn
+			op.GeoM.Translate(float64(boxWidth), float64(groundY-(boxWidth)))
+			var r image.Rectangle
+			r = image.Rect(0, 0, boxWidth, boxWidth)
+			screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
+			boxX = int(op.GeoM.Element(0, 2))
+			/* for j := 0; j < tileX; j++ {
+				fmt.Printf("op: %v\n", op.GeoM)
 				op.GeoM.Reset()
 				op.GeoM.Scale(1, -1)
 				op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX, tileSize)),
@@ -68,13 +81,14 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 				var r image.Rectangle
 				r = image.Rect(0, 0, boxWidth, boxWidth)
 				screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
-			}
+				boxGeoMX = int(op.GeoM.Element(0, 2))
+			} */
 		}
 	}
 }
 
 //Helper for box
-func (g *Game) boxAt(tileX int) (tileY int, ok bool) {
+func (g *Game) boxPossibleAt(tileX int) (tileY int, ok bool) {
 	if (tileX - boxStartOffsetX) <= 0 {
 		return 0, false
 	}
@@ -82,7 +96,7 @@ func (g *Game) boxAt(tileX int) (tileY int, ok bool) {
 		return 0, false
 	}
 	idx := floorDiv(tileX-boxStartOffsetX, boxIntervalX)
-	return g.boxTileYs[idx%len(g.boxTileYs)], true
+	return g.boxTileXs[idx%len(g.boxTileXs)], true
 }
 
 //Helper function for ground placement
@@ -104,15 +118,19 @@ func (g *Game) init() {
 	g.cameraX = -240
 	g.cameraY = 0
 	g.boxTileYs = make([]int, 256)
+	g.boxTileXs = make([]int, 256)
 	for i := range g.boxTileYs {
 		g.boxTileYs[i] = rand.Intn(6) + 2
+	}
+	for j := range g.boxTileXs {
+		g.boxTileXs[j] = rand.Intn(6) + 2
 	}
 }
 
 //gets needed images
 func init() {
 	var err error
-	playerImg, _, err = ebitenutil.NewImageFromFile("./images/character_ball.png")
+	playerImg, _, err = ebitenutil.NewImageFromFile("./images/player.png")
 	if err != nil {
 		log.Fatal(err)
 	}
