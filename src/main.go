@@ -45,24 +45,29 @@ type Game struct {
 	player *player
 
 	// Camera
-	cameraX int
-	cameraY int
+	cameraX        int
+	cameraY        int
+	cameraMovement int
 
 	// Boxes
 	boxTileYs []int
+	boxTileXs []int
+
+	//astroids
+	astroidYpos int
+	astroidXpos int
 
 	gameoverCount int
-}
 
-var (
-	background = color.White
-)
+	count int
+}
 
 func NewGame() *Game {
 	g := &Game{}
 	g.init()
 	return g
 }
+
 func main() {
 	ebiten.SetWindowSize(windowWidth, windowHeight)
 	ebiten.SetWindowTitle("Wall Game")
@@ -77,20 +82,22 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 }
 
 //This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
-// which in this case is to crash if not in ModeGame heheh
 func (g *Game) Update() error {
+	g.count++
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
 			if g.player == nil {
-				g.player = &player{x: 200 * unit, y: (groundY + 4) * unit}
+				g.player = &player{x: 200 * unit, y: (groundY - 40) * unit}
 			}
+			g.cameraMovement = 6
 			g.mode = ModeGame
 			//time.Sleep(time.Millisecond * 100)
 		}
 	case ModeGame:
 		g.updatePlayer()
 	case ModeGameOver:
+
 		if g.gameoverCount > 0 {
 			g.gameoverCount--
 		}
@@ -98,7 +105,13 @@ func (g *Game) Update() error {
 			g.init()
 			g.mode = ModeTitle
 			g.player.x = 200 * unit
-			g.player.y = (groundY + 4) * unit
+			g.player.y = (groundY - 40) * unit
+			boxX = 0
+			boxY = 0
+			playerX = 0
+			playerY = 0
+			astroidX = -200
+			astroidY = -200
 		}
 	}
 	return nil
@@ -106,11 +119,12 @@ func (g *Game) Update() error {
 
 //Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
-	screen.Fill(background)
+	g.drawSky(screen)
+	g.drawFire(screen)
 	g.drawGround(screen)
 
 	if g.mode != ModeTitle {
-		g.player.drawPL(screen)
+		g.drawPL(screen)
 	}
 
 	var titleTexts []string
@@ -122,6 +136,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case ModeGameOver:
 		titleTexts = []string{"", "GAME OVER!"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to return to title-screen", ""}
+		g.drawDeadPL(screen)
 	}
 	for i, l := range titleTexts {
 		x := (windowWidth - len(l)*titleFontSize) / 2
