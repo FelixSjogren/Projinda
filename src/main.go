@@ -4,8 +4,11 @@ import (
 	"image/color"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
+	"github.com/hajimehoshi/ebiten/audio"
+	"github.com/hajimehoshi/ebiten/audio/wav"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -29,6 +32,8 @@ const (
 	titleFontSize = fontSize * 1.5
 	fontSize      = 24
 	smallFontSize = fontSize / 2
+
+	sampleRate = 44100
 )
 
 var (
@@ -59,12 +64,39 @@ type Game struct {
 
 	gameoverCount int
 
+	// needed for fire
 	count int
+
+	// needed for audio
+	audioContext *audio.Context
+	audioPlayer  *audio.Player
 }
 
 func NewGame() *Game {
 	g := &Game{}
+	var err error
+
+	g.audioContext, err = audio.NewContext(44100)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	f, err := os.Open("./audios/jump.wav")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	d, err := wav.Decode(g.audioContext, f)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	g.audioPlayer, err = audio.NewPlayer(g.audioContext, d)
+	if err != nil {
+		log.Fatal(err)
+	}
 	g.init()
+
 	return g
 }
 
@@ -84,6 +116,8 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 //This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
 func (g *Game) Update() error {
 	g.count++
+	g.audioPlayer.Rewind()
+	g.audioPlayer.Play()
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
@@ -92,7 +126,6 @@ func (g *Game) Update() error {
 			}
 			g.cameraMovement = 6
 			g.mode = ModeGame
-			//time.Sleep(time.Millisecond * 100)
 		}
 	case ModeGame:
 		g.updatePlayer()
