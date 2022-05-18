@@ -21,8 +21,10 @@ const (
 
 //Makes character jump
 //To Add: Kolla så man inte kan hoppa i all evighetet
-func (c *player) tryJump() {
-	c.newY = -14 * unit
+func (g *Game) tryJump() {
+	if playerY == groundY+(playerHeight-10) || g.onBox() {
+		g.player.newY = -14 * unit
+	}
 }
 
 func (c *player) tryDive() {
@@ -30,19 +32,19 @@ func (c *player) tryDive() {
 }
 
 //updates the Horizontal movement of the character
-func (c *player) updateMovement() {
-	c.x += c.newX
-	c.y += c.newY
-	if c.y > groundY*unit {
-		c.y = groundY * unit
+func (g *Game) updateMovement() {
+	g.player.x += g.player.newX
+	g.player.y += g.player.newY
+	if g.player.y > groundY*unit {
+		g.player.y = groundY * unit
 	}
-	if c.newX > 0 {
-		c.newX -= 6
-	} else if c.newX < 0 {
-		c.newX += 4
+	if g.player.newX > 0 && !g.onBox() {
+		g.player.newX -= 6
+	} else if g.player.newX < 0 {
+		g.player.newX += 4
 	}
-	if c.newY < 20*unit {
-		c.newY += 8
+	if g.player.newY < 20*unit {
+		g.player.newY += 8
 	}
 }
 
@@ -50,24 +52,24 @@ func (c *player) updateMovement() {
 func (g *Game) updatePlayer() error {
 
 	//Makes the player follow the ground if no input
-	g.player.x -= g.cameraMovement * unit
+	g.player.x -= g.cameraMovement * unit * 2
 
-	if ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft) {
+	if (ebiten.IsKeyPressed(ebiten.KeyA) || ebiten.IsKeyPressed(ebiten.KeyArrowLeft)) && !g.hitBoxBack() {
 		g.player.newX = -6 * unit
 	}
 	if (ebiten.IsKeyPressed(ebiten.KeyD) || ebiten.IsKeyPressed(ebiten.KeyArrowRight)) && !g.hitBox() {
-		g.player.newX = 6 * unit
+		g.player.newX = 12 * unit
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
-		g.player.tryJump()
+		g.tryJump()
 	}
 
 	if inpututil.IsKeyJustPressed(ebiten.KeyArrowDown) || inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		g.player.tryDive()
 	}
 
-	g.player.updateMovement()
+	g.updateMovement()
 	if g.hitWall() {
 		g.mode = ModeGameOver
 		g.gameoverCount = 30
@@ -103,23 +105,62 @@ var (
 	playerY = 0
 )
 
+const (
+	playerWidth  = 60
+	playerHeight = 64
+)
+
 //checks if player hits box
 func (g *Game) hitBox() bool {
-	const (
-		playerWidth  = 60
-		playerHeight = 64
-	)
-
-	/* fmt.Println("camera: ", g.cameraX)
-	fmt.Println("gubbe: ", playerX)
-	fmt.Println("box: ", boxX) */
 
 	for i := 0; i <= unit; i++ {
-		if playerX+i+playerWidth == boxX && playerY >= (boxY-boxWidth) {
-			println("Hit!")
-			g.player.newX -= 6 * unit
+		if playerX+i+playerWidth-10 == boxX && playerY >= (boxY-boxWidth) {
+			g.player.newX = 0
+			//g.player.x += int(math.Abs(float64(playerX - boxX)))
 			return true
 			break
+		}
+	}
+
+	return false
+}
+
+//checks if player hits box with back
+func (g *Game) hitBoxBack() bool {
+
+	for i := 0; i <= unit; i++ {
+		if playerX-i == boxX+boxWidth && playerY >= (boxY-boxWidth) {
+			g.player.newX = 0
+			//g.player.x += int(math.Abs(float64(playerX - boxX)))
+			return true
+			break
+		}
+	}
+
+	return false
+}
+
+//Checks if player is on top of a box
+func (g *Game) onBox() bool {
+
+	for i := 0; i <= boxWidth; i++ {
+		if playerX+playerWidth == boxX+i || playerX == boxX+i ||
+			playerX+playerWidth == boxX+(boxWidth/2)+(i/2) || playerX == boxX+(boxWidth/2)+(i/2) {
+			println("X corr")
+			println("player Y", playerY)
+			println("boxy : ", boxY)
+
+			for j := 0; j <= unit; j++ {
+				if playerY+j+playerHeight == boxY-boxWidth {
+					println("on box")
+					if !inpututil.IsKeyJustPressed(ebiten.KeySpace) || !inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || !inpututil.IsKeyJustPressed(ebiten.KeyW) {
+						g.player.newY = 0
+					}
+					//g.player.y = boxY - boxWidth
+					return true
+					break
+				}
+			}
 		}
 	}
 
