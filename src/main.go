@@ -97,6 +97,7 @@ func (g *Game) Update() error {
 	case ModeGame:
 		g.updatePlayer()
 	case ModeGameOver:
+
 		if g.gameoverCount > 0 {
 			g.gameoverCount--
 		}
@@ -123,7 +124,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawGround(screen)
 
 	if g.mode != ModeTitle {
-		g.player.drawPL(screen)
+		g.drawPL(screen)
 	}
 
 	var titleTexts []string
@@ -135,6 +136,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	case ModeGameOver:
 		titleTexts = []string{"", "GAME OVER!"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to return to title-screen", ""}
+		g.drawDeadPL(screen)
 	}
 	for i, l := range titleTexts {
 		x := (windowWidth - len(l)*titleFontSize) / 2

@@ -22,7 +22,8 @@ const (
 //Makes character jump
 //To Add: Kolla så man inte kan hoppa i all evighetet
 func (g *Game) tryJump() {
-	if playerY == groundY+(playerHeight-10) || g.onBox() {
+	if playerY == groundY+(playerHeight-20) || g.onBox() {
+
 		g.player.newY = -14 * unit
 	}
 }
@@ -118,7 +119,8 @@ var (
 
 const (
 	playerWidth  = 60
-	playerHeight = 64
+	playerHeight = 68
+
 )
 
 //Checks if player hits astroids
@@ -127,8 +129,9 @@ func (g *Game) hitAstroid() bool {
 		if playerX+playerWidth == astroidX+i || playerX == astroidX+i ||
 			playerX+playerWidth == astroidX+(boxWidth/2)+(i/2) || playerX == astroidX+(boxWidth/2)+(i/2) {
 			for j := 0; j <= unit; j++ {
-				if playerY+playerHeight == astroidY+j || playerY == astroidY+j ||
-					playerY+playerHeight == astroidY+(boxWidth/2)+(j/2) || playerX == astroidX+(boxWidth/2)+(j/2) {
+				if playerY-playerHeight == astroidY+j-20 || playerY == astroidY+j-20 ||
+					playerY-playerHeight == astroidY+(boxWidth/2)+(j/2)-20 || playerY == astroidY+(boxWidth/2)+(j/2)-20 {
+
 					return true
 					break
 				}
@@ -176,7 +179,6 @@ func (g *Game) onBox() bool {
 			playerX+playerWidth == boxX+(boxWidth/2)+(i/2) || playerX == boxX+(boxWidth/2)+(i/2) {
 			for j := 0; j <= unit; j++ {
 				if playerY+j+playerHeight == boxY-boxWidth {
-					println("on box")
 					if inpututil.IsKeyJustPressed(ebiten.KeySpace) || inpututil.IsKeyJustPressed(ebiten.KeyArrowUp) || inpututil.IsKeyJustPressed(ebiten.KeyW) {
 						g.player.newY = -14 * unit
 					} else {

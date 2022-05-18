@@ -11,13 +11,15 @@ import (
 )
 
 var (
-	
-	playerImg *ebiten.Image
-	groundImg *ebiten.Image
-	boxImg    *ebiten.Image
-  astroidImg *ebiten.Image
-	skyImg    *ebiten.Image
-	fireImg   *ebiten.Image
+	playerImg       *ebiten.Image
+	playerRunForImg *ebiten.Image
+	playerJumpImg   *ebiten.Image
+	playerDeadImg   *ebiten.Image
+	groundImg       *ebiten.Image
+	boxImg          *ebiten.Image
+	astroidImg      *ebiten.Image
+	skyImg          *ebiten.Image
+	fireImg         *ebiten.Image
 )
 
 const (
@@ -32,19 +34,66 @@ const (
 	frameOY     = 0
 	frameWidth  = 45
 	frameHeight = 720
+
+
+	playerFrameNum    = 6
+	playerFrameOX     = 0
+	playerFrameOY     = 0
+	playerFrameWidth  = 60
+	playerFrameHeight = 68
+
 )
 
-//draws player
-func (p *player) drawPL(screen *ebiten.Image) {
-	s := playerImg
-
+func (g *Game) drawDeadPL(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
-	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit+(playerHeight-10))
-	screen.DrawImage(s, op)
-	playerX = int(op.GeoM.Element(0, 2))
-	playerY = int(op.GeoM.Element(1, 2))
+	op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
+	screen.DrawImage(playerDeadImg, op)
+}
 
+//draws player
+func (g *Game) drawPL(screen *ebiten.Image) {
+
+	op := &ebiten.DrawImageOptions{}
+
+	if g.player.newY < 0 && g.player.newX < 0 {
+		op.GeoM.Scale(-1, 1)
+		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
+		screen.DrawImage(playerJumpImg, op)
+		playerX = int(op.GeoM.Element(0, 2))
+		playerY = int(op.GeoM.Element(1, 2))
+		println(playerY)
+	} else if g.player.newY < 0 {
+		op.GeoM.Scale(1, 1)
+		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
+		screen.DrawImage(playerJumpImg, op)
+		playerX = int(op.GeoM.Element(0, 2))
+		playerY = int(op.GeoM.Element(1, 2))
+	} else if g.player.newX > 0 {
+		op.GeoM.Scale(1, 1)
+		op.GeoM.Translate(float64(g.player.x)/unit-23, float64(g.player.y)/unit+14)
+		op.GeoM.Translate(playerFrameWidth/2, playerFrameHeight/2)
+		i := (g.count / 5) % playerFrameNum
+		sx, sy := playerFrameOX+i*playerFrameWidth, playerFrameOY
+		screen.DrawImage(playerRunForImg.SubImage(image.Rect(sx, sy, sx+playerFrameWidth, sy+playerFrameHeight)).(*ebiten.Image), op)
+		playerX = int(op.GeoM.Element(0, 2))
+		playerY = int(op.GeoM.Element(1, 2))
+	} else if g.player.newX < 0 {
+		op.GeoM.Scale(-1, 1)
+		op.GeoM.Translate(float64(g.player.x)/unit-23, float64(g.player.y)/unit+14)
+		op.GeoM.Translate(playerFrameWidth/2, playerFrameHeight/2)
+		i := (g.count / 5) % playerFrameNum
+		sx, sy := playerFrameOX+i*playerFrameWidth, playerFrameOY
+		screen.DrawImage(playerRunForImg.SubImage(image.Rect(sx, sy, sx+playerFrameWidth, sy+playerFrameHeight)).(*ebiten.Image), op)
+		playerX = int(op.GeoM.Element(0, 2))
+		playerY = int(op.GeoM.Element(1, 2))
+	} else {
+		op.GeoM.Scale(1, 1)
+		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
+		screen.DrawImage(playerImg, op)
+		playerX = int(op.GeoM.Element(0, 2))
+		playerY = int(op.GeoM.Element(1, 2))
+	}
 }
 
 // draws the sky
@@ -55,6 +104,8 @@ func (g *Game) drawSky(screen *ebiten.Image) {
 	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, windowWidth, windowHeight)).(*ebiten.Image), op)
 }
 
+
+//draws the fire
 func (g *Game) drawFire(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 
@@ -82,7 +133,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 	for i := -2; i < newX+1; i++ {
 		// ground
 		op.GeoM.Reset()
-		op.GeoM.Translate(float64(i*(tileSize-1)-floorMod(g.cameraX, tileSize/2)),
+		op.GeoM.Translate(float64(i*(tileSize-1)-floorMod(g.cameraX, tileSize))+50,
 			float64((newY-1)*tileSize-floorMod(g.cameraY, tileSize)))
 		screen.DrawImage(groundImg.SubImage(image.Rect(0, 0, tileSize, tileSize)).(*ebiten.Image), op)
 
@@ -184,6 +235,18 @@ func init() {
 		log.Fatal(err)
 	}
 	fireImg, _, err = ebitenutil.NewImageFromFile("./images/fire_anim.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	playerRunForImg, _, err = ebitenutil.NewImageFromFile("./images/playerRunFor.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	playerJumpImg, _, err = ebitenutil.NewImageFromFile("./images/playerJump.png")
+	if err != nil {
+		log.Fatal(err)
+	}
+	playerDeadImg, _, err = ebitenutil.NewImageFromFile("./images/playerDead.png")
 	if err != nil {
 		log.Fatal(err)
 	}
