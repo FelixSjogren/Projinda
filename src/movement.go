@@ -95,8 +95,10 @@ func (g *Game) boxAt(tileX int) (tileY int, ok bool) {
 	return g.boxTileXs[idx%len(g.boxTileXs)], true
 }
 
+//positions of player and boxes
 var (
 	boxX    = 0
+	boxY    = 0
 	playerX = 0
 	playerY = 0
 )
@@ -113,40 +115,12 @@ func (g *Game) hitBox() bool {
 	fmt.Println("box: ", boxX) */
 
 	for i := 0; i <= unit; i++ {
-		if playerX+i+playerWidth == boxX && playerY >= (groundY-boxWidth) {
+		if playerX+i+playerWidth == boxX && playerY >= (boxY-boxWidth) {
 			println("Hit!")
 			g.player.newX -= 6 * unit
 			return true
 			break
 		}
 	}
-
-	/* if boxXpos, ok := g.boxAt(floorDiv(g.player.x, groundY-boxWidth)); ok && (g.player.x >= boxXpos && g.player.newX >= boxXpos) {
-		return true
-	} */
-
-	/*
-		w, h := playerImg.Size()
-		x0 := floorDiv(g.player.x, groundY) + (w-playerWidth)/2
-		y0 := floorDiv(g.player.y, 16) + (h-playerHeight)/2
-		x1 := x0 + playerWidth
-
-		xMin := floorDiv(x0-boxWidth, tileSize)
-		xMax := floorDiv(x0+playerWidth, tileSize)
-		for x := xMin; x <= xMax; x++ {
-			y, ok := g.boxAt(x)
-			if !ok {
-				continue
-			}
-			if x0 >= x*tileSize+boxWidth {
-				continue
-			}
-			if x1 < x*tileSize {
-				continue
-			}
-			if y0 < y*tileSize {
-				return true
-			}
-		} */
 	return false
 }

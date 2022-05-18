@@ -69,6 +69,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 			r = image.Rect(0, 0, boxWidth, boxWidth)
 			screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
 			boxX = int(op.GeoM.Element(0, 2))
+			boxY = int(op.GeoM.Element(1, 2))
 			/* for j := 0; j < tileX; j++ {
 				fmt.Printf("op: %v\n", op.GeoM)
 				op.GeoM.Reset()
