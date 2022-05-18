@@ -31,7 +31,7 @@ func (p *player) drawPL(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
-	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit+54)
+	op.GeoM.Translate(float64(p.x)/unit, float64(p.y)/unit+(playerHeight-10))
 	screen.DrawImage(s, op)
 	playerX = int(op.GeoM.Element(0, 2))
 	playerY = int(op.GeoM.Element(1, 2))
