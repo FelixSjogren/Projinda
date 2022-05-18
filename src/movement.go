@@ -122,5 +122,6 @@ func (g *Game) hitBox() bool {
 			break
 		}
 	}
+
 	return false
 }
