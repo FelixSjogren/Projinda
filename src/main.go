@@ -135,7 +135,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		titleTexts = []string{"EXTINCTION RUN"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to play", ""}
 	case ModeGameOver:
-		titleTexts = []string{"", "GAME OVER!"}
+		titleTexts = []string{"", "YOU'VE GONE EXTINCT!"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to return to title-screen", ""}
 		g.drawDeadPL(screen)
 	}
