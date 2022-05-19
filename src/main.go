@@ -4,11 +4,8 @@ import (
 	"image/color"
 	"log"
 	"math/rand"
-	"os"
 	"time"
 
-	"github.com/hajimehoshi/ebiten/audio"
-	"github.com/hajimehoshi/ebiten/audio/wav"
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/examples/resources/fonts"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
@@ -89,15 +86,13 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 // Looped infinitely in ebiten.RunGame. It checks which mode 'Game' is in and performs actions accordingly.
 func (g *Game) Update() error {
 	g.count++
-	g.audioPlayer.Rewind()
-	g.audioPlayer.Play()
 	switch g.mode {
 	case ModeTitle:
 		if g.isSpacePressed() {
 			if g.player == nil {
 				g.player = &player{x: 200 * unit, y: (groundY - 40) * unit}
 			}
-			g.cameraMovement = 6
+			g.cameraMovement = 4
 			g.mode = ModeGame
 		}
 	case ModeGame:
