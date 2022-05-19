@@ -10,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+//Images
 var (
 	playerImg       *ebiten.Image
 	playerRunForImg *ebiten.Image
@@ -22,28 +23,31 @@ var (
 	fireImg         *ebiten.Image
 )
 
+//Constants for draw
 const (
+	//ground and box
 	tileSize        = 212
 	boxWidth        = 100
 	boxStartOffsetX = 8
 	boxIntervalX    = 8
 	boxGapY         = 0
 
+	//fire animation
 	frameNum    = 4
 	frameOX     = 0
 	frameOY     = 0
 	frameWidth  = 45
 	frameHeight = 720
 
-
+	//player run animation
 	playerFrameNum    = 6
 	playerFrameOX     = 0
 	playerFrameOY     = 0
 	playerFrameWidth  = 60
 	playerFrameHeight = 68
-
 )
 
+//Draws a sceleton if the player dies
 func (g *Game) drawDeadPL(screen *ebiten.Image) {
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Scale(1, 1)
@@ -56,41 +60,46 @@ func (g *Game) drawPL(screen *ebiten.Image) {
 
 	op := &ebiten.DrawImageOptions{}
 
+	//Draws jump-frame backwards
 	if g.player.newY < 0 && g.player.newX < 0 {
 		op.GeoM.Scale(-1, 1)
 		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
 		screen.DrawImage(playerJumpImg, op)
+		//Saves player drawn pos for collision check
 		playerX = int(op.GeoM.Element(0, 2))
 		playerY = int(op.GeoM.Element(1, 2))
-		println(playerY)
-	} else if g.player.newY < 0 {
+	} else if g.player.newY < 0 { //Jump-frame
 		op.GeoM.Scale(1, 1)
 		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
 		screen.DrawImage(playerJumpImg, op)
+		//Saves player drawn pos for collision check
 		playerX = int(op.GeoM.Element(0, 2))
 		playerY = int(op.GeoM.Element(1, 2))
-	} else if g.player.newX > 0 {
+	} else if g.player.newX > 0 { //Running animation forwards
 		op.GeoM.Scale(1, 1)
 		op.GeoM.Translate(float64(g.player.x)/unit-23, float64(g.player.y)/unit+14)
 		op.GeoM.Translate(playerFrameWidth/2, playerFrameHeight/2)
 		i := (g.count / 5) % playerFrameNum
 		sx, sy := playerFrameOX+i*playerFrameWidth, playerFrameOY
 		screen.DrawImage(playerRunForImg.SubImage(image.Rect(sx, sy, sx+playerFrameWidth, sy+playerFrameHeight)).(*ebiten.Image), op)
+		//Saves player drawn pos for collision check
 		playerX = int(op.GeoM.Element(0, 2))
 		playerY = int(op.GeoM.Element(1, 2))
-	} else if g.player.newX < 0 {
+	} else if g.player.newX < 0 { //Running animation backwards
 		op.GeoM.Scale(-1, 1)
 		op.GeoM.Translate(float64(g.player.x)/unit-23, float64(g.player.y)/unit+14)
 		op.GeoM.Translate(playerFrameWidth/2, playerFrameHeight/2)
 		i := (g.count / 5) % playerFrameNum
 		sx, sy := playerFrameOX+i*playerFrameWidth, playerFrameOY
 		screen.DrawImage(playerRunForImg.SubImage(image.Rect(sx, sy, sx+playerFrameWidth, sy+playerFrameHeight)).(*ebiten.Image), op)
+		//Saves player drawn pos for collision check
 		playerX = int(op.GeoM.Element(0, 2))
 		playerY = int(op.GeoM.Element(1, 2))
-	} else {
+	} else { //Standing still
 		op.GeoM.Scale(1, 1)
 		op.GeoM.Translate(float64(g.player.x)/unit, float64(g.player.y)/unit+(playerHeight-20))
 		screen.DrawImage(playerImg, op)
+		//Saves player drawn pos for collision check
 		playerX = int(op.GeoM.Element(0, 2))
 		playerY = int(op.GeoM.Element(1, 2))
 	}
@@ -103,7 +112,6 @@ func (g *Game) drawSky(screen *ebiten.Image) {
 	op.GeoM.Reset()
 	screen.DrawImage(skyImg.SubImage(image.Rect(0, 0, windowWidth, windowHeight)).(*ebiten.Image), op)
 }
-
 
 //draws the fire
 func (g *Game) drawFire(screen *ebiten.Image) {
@@ -120,6 +128,7 @@ func (g *Game) drawFire(screen *ebiten.Image) {
 
 //draws the ground and box and moves camera
 func (g *Game) drawGround(screen *ebiten.Image) {
+	//Moves camera
 	g.cameraX += g.cameraMovement
 	const (
 		newX        = windowWidth / tileSize
@@ -142,13 +151,12 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 			op.GeoM.Reset()
 			op.GeoM.Scale(1, -1)
 			op.GeoM.Translate(float64(i*tileSize-floorMod(g.cameraX, tileSize)),
-				//om man sätter tilesize i början till boxWidth blir det en rad
 				float64(tileSize-floorMod(g.cameraY, boxWidth)))
-			//xy-pos typ men lite oklart om man sätter första argumentet i translate till o får man ett torn
 			op.GeoM.Translate(float64(boxWidth), float64(groundY-(boxWidth)))
 			var r image.Rectangle
 			r = image.Rect(0, 0, boxWidth, boxWidth)
 			screen.DrawImage(boxImg.SubImage(r).(*ebiten.Image), op)
+			//Saves box position for collision check
 			boxX = int(op.GeoM.Element(0, 2))
 			boxY = int(op.GeoM.Element(1, 2))
 		}
@@ -165,6 +173,7 @@ func (g *Game) drawGround(screen *ebiten.Image) {
 			var r image.Rectangle
 			r = image.Rect(0, 0, boxWidth, boxWidth)
 			screen.DrawImage(astroidImg.SubImage(r).(*ebiten.Image), op)
+			//Saves asteroid pos for collision check
 			astroidX = int(op.GeoM.Element(0, 2))
 			astroidY = int(op.GeoM.Element(1, 2))
 		}
