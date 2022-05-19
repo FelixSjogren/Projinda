@@ -32,8 +32,6 @@ const (
 	titleFontSize = fontSize * 1.5
 	fontSize      = 24
 	smallFontSize = fontSize / 2
-
-	sampleRate = 44100
 )
 
 var (
@@ -42,11 +40,11 @@ var (
 	smallArcadeFont font.Face
 )
 
-//a game type, wich is needed to run the game
+// A game type, wich is needed to run the game
 type Game struct {
 	mode Mode
 
-	//Player
+	// Player
 	player *player
 
 	// Camera
@@ -58,62 +56,37 @@ type Game struct {
 	boxTileYs []int
 	boxTileXs []int
 
-	//astroids
+	// Asteroids
 	astroidYpos int
 	astroidXpos int
 
 	gameoverCount int
 
-	// needed for fire
+	// Counter that is needed for the fire animation
 	count int
-
-	// needed for audio
-	audioContext *audio.Context
-	audioPlayer  *audio.Player
 }
 
+// Creates a new 'Game'
 func NewGame() *Game {
 	g := &Game{}
-	var err error
-
-	g.audioContext, err = audio.NewContext(44100)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	f, err := os.Open("./audios/jump.wav")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	d, err := wav.Decode(g.audioContext, f)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	g.audioPlayer, err = audio.NewPlayer(g.audioContext, d)
-	if err != nil {
-		log.Fatal(err)
-	}
 	g.init()
-
 	return g
 }
 
 func main() {
 	ebiten.SetWindowSize(windowWidth, windowHeight)
-	ebiten.SetWindowTitle("Wall Game")
+	ebiten.SetWindowTitle("Exctinction Run")
 	if err := ebiten.RunGame(NewGame()); err != nil {
 		panic(err)
 	}
 }
 
-//needed for ebiten.RunGame
+// Needed for ebiten.RunGame
 func (g *Game) Layout(outsideWidth, outsideHeight int) (int, int) {
 	return windowWidth, windowHeight
 }
 
-//This is looped infinitely in ebiten.RunGame, checks which mode Game is in and preforms the correct actions
+// Looped infinitely in ebiten.RunGame. It checks which mode 'Game' is in and performs actions accordingly.
 func (g *Game) Update() error {
 	g.count++
 	g.audioPlayer.Rewind()
@@ -150,7 +123,7 @@ func (g *Game) Update() error {
 	return nil
 }
 
-//Also looped infinitely from ebiten.RunGame, Draws what is needen on the screen
+// Looped infinitely in ebiten.RunGame. It draws what is needed on the screen
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawSky(screen)
 	g.drawFire(screen)
@@ -164,7 +137,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	var texts []string
 	switch g.mode {
 	case ModeTitle:
-		titleTexts = []string{"WALL GAME"}
+		titleTexts = []string{"EXTINCTION RUN"}
 		texts = []string{"", "", "", "", "", "", "", "Press space to play", ""}
 	case ModeGameOver:
 		titleTexts = []string{"", "GAME OVER!"}
@@ -192,7 +165,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 }
 
-//Checks if spacebar is pressed
+// Checks if spacebar is pressed
 func (g *Game) isSpacePressed() bool {
 	if inpututil.IsKeyJustPressed(ebiten.KeySpace) {
 		return true
